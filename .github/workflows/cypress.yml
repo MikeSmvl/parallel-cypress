@@ -6,11 +6,13 @@ jobs:
     strategy:
         fail-fast: false
         matrix:
-            containers: [ 0, 1, 2, 3, 4 ]
+            containers: [ 0, 1]
     steps:
+        - name: Install
+          uses: actions/checkout@v2
         # only install dependencies using
         # https://github.com/cypress-io/github-action
         - name: Test
           uses: cypress-io/github-action@v2
           with:
-            spec: $(node cypress-partial.js 5 ${{ matrix.containers }})
+            spec: $(node cypress-partial.js 2 ${{ matrix.containers }})
