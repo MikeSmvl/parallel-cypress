@@ -1,0 +1,16 @@
+name: e2e tests
+on: pull_request
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # only install dependencies using
+      # https://github.com/cypress-io/github-action
+      - name: Install
+        uses: cypress-io/github-action@v2
+        with:
+          runTests: true
