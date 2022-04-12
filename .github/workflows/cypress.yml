@@ -1,16 +1,12 @@
 name: e2e tests
 on: workflow_dispatch
 jobs:
-  test:
-    name: Run tests
+  e2e:
     runs-on: ubuntu-latest
+    strategy:
+        fail-fast: false
+        matrix:
+            containers: [ 0, 1, 2, 3, 4 ]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      # only install dependencies using
-      # https://github.com/cypress-io/github-action
-      - name: Install
-        uses: cypress-io/github-action@v2
-        with:
-          runTests: true
+        - name: E2E
+          run: cypress run --spec $(node cypress-partial.js 5 ${{ matrix.containers }})
