@@ -1,6 +1,6 @@
 describe('My Second Test', () => {
   it('clicking "type" shows the right headings', () => {
-    cy.wait(10000)
+    cy.wait(3000)
     cy.visit('https://example.cypress.io')
     cy.pause()
     cy.contains('type').click()
