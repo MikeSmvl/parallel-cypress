@@ -39,11 +39,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Load node_modules
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
-          key: node_modules-${{ hashFiles('npm-shrinkwrap.json') }}
-          # no restore-keys here, so we only accept this exact version
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Execute tests
         uses: cypress-io/github-action@v2
@@ -64,11 +63,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Download the build folders
-        uses: actions/download-artifact@v2
+      - name: Load node_modules
+        uses: actions/cache@v2
         with:
-          name: build
-          path: build
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Execute tests
         uses: cypress-io/github-action@v2
