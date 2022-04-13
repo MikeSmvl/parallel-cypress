@@ -12,18 +12,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Save build folder
-        uses: actions/upload-artifact@v2
+      - name: Cache dependencies
+        uses: actions/cache@v2
         with:
-          name: build
-          if-no-files-found: error
-          path: build
-          retention-days: 1
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json
 
       - name: Install
-        uses: cypress-io/github-action@v2
-        with:
-          runTests: false
+        run: npm install
 
       - name: Parse test files for parallelization
         id: parse
@@ -41,11 +38,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Download the build folders
-        uses: actions/download-artifact@v2
+      - name: Load node_modules
+        uses: actions/cache@v1
         with:
-          name: build
-          path: build
+          path: node_modules
+          key: node_modules-${{ hashFiles('npm-shrinkwrap.json') }}
+          # no restore-keys here, so we only accept this exact version
 
       - name: Execute tests
         uses: cypress-io/github-action@v2
