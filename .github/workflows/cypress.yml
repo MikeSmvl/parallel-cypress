@@ -12,18 +12,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Cache Cypress binary and node_modules
+        id: cache-cypress
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/Cypress
+            node_modules
+          key: cypress-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
       - name: Install
         uses: cypress-io/github-action@v2
         with:
           runTests: false
-
-      - name: Cache npm dependencies
-        uses: actions/cache@v2
-        with:
-          path: '~/.npm'
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
 
       - name: Parse test files for parallelization
         id: parse
@@ -59,6 +60,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Restore cached cypress deps
+        id: cache-cypress
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/Cypress
+            node_modules
+          key: cypress-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Execute tests
         uses: cypress-io/github-action@v2
