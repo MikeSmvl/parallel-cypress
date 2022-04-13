@@ -1,9 +1,0 @@
-version: '3.8'
-services:
-  cypress-container:
-    build: ./
-    network_mode: "bridge"
-    volumes:
-      - ./cypress/:/cypress_testing/cypress
-      - ./mochawesome-report:/cypress_testing/mochawesome-report
-      - /dev/shm:/dev/shm

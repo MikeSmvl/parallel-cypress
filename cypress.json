@@ -1,14 +1,3 @@
 {
-  "chromeWebSecurity": false,
-  "projectId": "0xIslamTaha",
-  "reporter": "mochawesome",
-  "reporterOptions": {
-    "reportDir": "cypress/report/mochawesome-report",
-    "overwrite": false,
-    "html": false,
-    "json": true
-  },
-  "video": false,
-  "watchForFileChanges": false,
-  "retries": 1
+  "video": false
 }

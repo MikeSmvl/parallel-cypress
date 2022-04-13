@@ -1,22 +1,82 @@
-name: E2E Tests
-on: workflow_dispatch
-jobs:
-  run-orchestrator:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
-        uses: actions/checkout@v2
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+name: Cypress test
 
-      - name: 🚀 Exeucte the test cases
-        run: |
-          npm i
-          npx orchestrator --config orchestrator.json
+on: workflow_dispatch
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      integration-tests: ${{ steps.parse.outputs.integration-tests }}
+      component-tests: ${{ steps.parse.outputs.component-tests }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build
+        uses: cypress-io/github-action@v2
+        with:
+          runTests: false
+          build: npm run build
+
+      - name: Save build folder
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          if-no-files-found: error
+          path: build
+          retention-days: 1
+
+      - name: Parse test files for parallelization
+        id: parse
+        uses: tgamauf/cypress-parallel@v1
+
+  test-integration:
+    runs-on: ubuntu-latest
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        # Run the tests in parallel, each with one of the prepared test specs
+        spec: ${{ fromJson(needs.prepare.outputs.integration-tests) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Download the build folders
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: build
+
+      - name: Execute tests
+        uses: cypress-io/github-action@v2
+        with:
+          # We have already installed all dependencies above
+          install: false
+          # Use the spec provided to this worker to execute the test
+          spec: ${{ matrix.spec }}
+
+  test-component:
+    runs-on: ubuntu-latest
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        spec: ${{ fromJson(needs.prepare.outputs.component-tests) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Download the build folders
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: build
+
+      - name: Execute tests
+        uses: cypress-io/github-action@v2
+        with:
+          install: false
+          # To run component tests we need to use "cypress run-ct"
+          command: npx cypress run-ct
+          spec: ${{ matrix.spec }}
