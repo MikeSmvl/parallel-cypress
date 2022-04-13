@@ -18,6 +18,7 @@ jobs:
           path: |
             **/node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install
         run: npm install
@@ -41,7 +42,8 @@ jobs:
       - name: Load node_modules
         uses: actions/cache@v2
         with:
-          path: node_modules
+          path: |
+            **/node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Execute tests
@@ -66,7 +68,8 @@ jobs:
       - name: Load node_modules
         uses: actions/cache@v2
         with:
-          path: node_modules
+          path: |
+            **/node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Execute tests
