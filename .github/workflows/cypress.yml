@@ -12,19 +12,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build
+      - name: Install
         uses: cypress-io/github-action@v2
         with:
           runTests: false
-          build: npm run build
-
-      - name: Save build folder
-        uses: actions/upload-artifact@v2
-        with:
-          name: build
-          if-no-files-found: error
-          path: build
-          retention-days: 1
 
       - name: Parse test files for parallelization
         id: parse
@@ -41,12 +32,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Download the build folders
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: build
 
       - name: Execute tests
         uses: cypress-io/github-action@v2
@@ -66,12 +51,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Download the build folders
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: build
 
       - name: Execute tests
         uses: cypress-io/github-action@v2
