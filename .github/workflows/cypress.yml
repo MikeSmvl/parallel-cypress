@@ -12,14 +12,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Cache Cypress binary and node_modules
-        id: cache-cypress
-        uses: actions/cache@v2
+      - name: Save build folder
+        uses: actions/upload-artifact@v2
         with:
-          path: |
-            ~/.cache/Cypress
-            node_modules
-          key: cypress-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          name: build
+          if-no-files-found: error
+          path: build
+          retention-days: 1
 
       - name: Install
         uses: cypress-io/github-action@v2
@@ -42,6 +41,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Download the build folders
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: build
+
       - name: Execute tests
         uses: cypress-io/github-action@v2
         with:
@@ -61,14 +66,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Restore cached cypress deps
-        id: cache-cypress
-        uses: actions/cache@v2
+      - name: Download the build folders
+        uses: actions/download-artifact@v2
         with:
-          path: |
-            ~/.cache/Cypress
-            node_modules
-          key: cypress-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          name: build
+          path: build
 
       - name: Execute tests
         uses: cypress-io/github-action@v2
